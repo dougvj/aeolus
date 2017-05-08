@@ -20,7 +20,7 @@
 
 
 PREFIX = /usr/local
-SUFFIX := $(shell uname -m | sed -e 's/^unknown/$//' -e 's/^i.86/$//' -e 's/^x86_64/$/64/')
+SUFFIX := $(shell uname -p | sed -e 's/^unknown/$//' -e 's/^i.86/$//' -e 's/^x86_64/$/64/')
 LIBDIR = lib$(SUFFIX)
 VERSION = 0.9.0
 CPPFLAGS += -DVERSION=\"$(VERSION)\" -DLIBDIR=\"$(PREFIX)/$(LIBDIR)\"
@@ -30,9 +30,9 @@ CXXFLAGS += -march=native
 all:	aeolus aeolus_x11.so aeolus_txt.so
 
 
-AEOLUS_O =	main.o audio.o audio-portaudio.o model.o slave.o imidi-osx.o addsynth.o scales.o \
+AEOLUS_O =	main.o audio.o model.o slave.o imidi-osx.o addsynth.o scales.o \
 		reverb.o asection.o division.o rankwave.o rngen.o exp2ap.o lfqueue.o
-aeolus:	LDLIBS += -lclthreads -lpthread -ljack -lpthread -framework Cocoa -framework CoreMIDI -lportaudio
+aeolus:	LDLIBS += -lclthreads -lpthread -ljack -lpthread -framework Cocoa -framework CoreMIDI
 aeolus: LDFLAGS += -L$(PREFIX)/$(LIBDIR)
 aeolus:	$(AEOLUS_O)
 	g++ $(LDFLAGS) -o $@ $(AEOLUS_O) $(LDLIBS)
@@ -46,7 +46,7 @@ XIFACE_O =	styles.o mainwin.o midiwin.o audiowin.o instrwin.o editwin.o midimatr
 		multislider.o functionwin.o xiface.o addsynth.o
 aeolus_x11.so:	CPPFLAGS += -dynamic -D_REENTRANT -I/usr/X11R6/include `freetype-config --cflags`
 aeolus_x11.so:	LDLIBS += -lclthreads -lclxclient -lXft -lX11
-aeolus_x11.so:	LDFLAGS += -dynamiclib -L$(PREFIX)/$(LIBDIR) -L/usr/X11R6/lib
+aeolus_x11.so:	LDFLAGS += -dynamiclib -L$(PREFIX)/$(LIBDIR) -L/usr/X11R6/$(LIBDIR)
 aeolus_x11.so: $(XIFACE_O) $(LIBCLX)
 	g++ $(LDFLAGS) -o $@ $(XIFACE_O) $(LDLIBS)
 
